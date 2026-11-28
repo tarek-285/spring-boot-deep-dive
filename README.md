@@ -101,4 +101,83 @@ spring-boot-deep-dive/
 ├── phase-07-testing-production/
 └── phase-08-advanced-backend/
 ```
+---
+## 02. Data Retrieval & Query Optimization
+### Pagination 
+```What is pagination?```
+>Pagination means dividing a large collection of record into small groups called pages
+- Most relational databases support pagination through SQL .
+>select * 
+> from user 
+> limit 5 offset 0
+
+#### Spring DataJpa provide 3 provide 3 important concept
+
+- Pageable
+- PageRequest
+- Page<T\>
+```
+A. Pageable is an interface that describe pagination information
+like pageNumber, pageSize , sorting Information.
+pageNumebr start with O .
+
+B. PageRequest is concrete implementation of Pageable .It returns Pageable 
+implmeatation . 
+PageRequest.of(pageNumber , pageSize) ;
+Pagerequest.of(pageNumber, pageSize , Sorting.of("price").ascending()) 
+
+C.Page 
+Page<T> represents a Page of retreived data along with page related metadata.
+Example: 
+
+Pageable pageable = PageRequest.of(pageNumber, pageSizee)
+Page<Product> products = produRepo.findALl(pageable) ;
+
+Now we can get
+products.getSize() , 
+products.getcontent(),
+prodoct.hasNext(),
+product.hasPrevious()
+and more useful methods
+```
+### Page vs Slice vs List
+Its about return type it can be 
+
+- Page<T\>
+- Slice<T\>
+- List<T\>
+
+```
+Page<Products> prudcts;
+it provide total page , total element , total size page related info
+to get total Element it runs coslt sql 
+ select count(*) 
+from produts 
+ ```
+``` 
+Slice<Product> products
+slice retriev data by hasnextSlice()
+Slice only find size +1 extra record .so that it know is next slice need to retrieve
+
+```
+```
+List
+it only return row data .no meta data about paginaton or slice or dividing part
+
+```
+
+## Architechure 
+* **Controller(ProductController)** layer accept pageSize , pageNumber and set a default pagesize and pageNumber
+* **ServiceLayer(ProductService)** create a Pageable instance by PageRequest.of(pageNumber , pageSize) and then call the repository layer with the instance
+* **Repository Layer** have default derived query that run execute sql 
+```
+select * from 
+products 
+limit 10, offset 0
+
+```
+
+
+
+
 
